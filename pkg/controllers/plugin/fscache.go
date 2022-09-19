@@ -57,6 +57,9 @@ func (c *FSCache) Sync(namespace string, cache plugincontroller.UIPluginCache) e
 			return err
 		}
 		for _, file := range files {
+			if file == "" {
+				continue
+			}
 			err = fetchFile(plugin.Endpoint, plugin.Name, plugin.Version, file)
 			if err != nil {
 				return err
