@@ -19,7 +19,7 @@ steps:
     image: plugins/github-release
     settings:
       api_key:
-        from_secret: github_token
+        from_secret: GITHUB_TOKEN
       prerelease: true
       checksum:
         - sha256
@@ -41,11 +41,11 @@ steps:
     settings:
       dockerfile: package/Dockerfile
       password:
-        from_secret: docker_password
+        from_secret: DOCKER_PASSWORD
       repo: "rancher/ui-plugin-operator"
       tag: "${DRONE_TAG}-amd64"
       username:
-        from_secret: docker_username
+        from_secret: DOCKER_USERNAME
     when:
       instance:
         - drone-publish.rancher.io
@@ -81,7 +81,7 @@ steps:
     image: plugins/github-release
     settings:
       api_key:
-        from_secret: github_token
+        from_secret: GITHUB_TOKEN
       prerelease: true
       checksum:
         - sha256
@@ -103,11 +103,11 @@ steps:
     settings:
       dockerfile: package/Dockerfile
       password:
-        from_secret: docker_password
+        from_secret: DOCKER_PASSWORD
       repo: "rancher/ui-plugin-operator"
       tag: "${DRONE_TAG}-arm64"
       username:
-        from_secret: docker_username
+        from_secret: DOCKER_USERNAME
     when:
       instance:
         - drone-publish.rancher.io
@@ -135,9 +135,9 @@ steps:
     image: plugins/manifest:1.0.2
     settings:
       username:
-        from_secret: docker_username
+        from_secret: DOCKER_USERNAME
       password:
-        from_secret: docker_password
+        from_secret: DOCKER_PASSWORD
       platforms:
         - linux/amd64
         - linux/arm64
