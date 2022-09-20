@@ -38,6 +38,8 @@ affinity: {}
 
 podAnnotations: []
 
+additionalArgs: []
+
 global:
   cattle:
     systemDefaultRegistry: ""
