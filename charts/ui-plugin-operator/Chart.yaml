@@ -6,7 +6,7 @@ annotations:
   catalog.cattle.io/os: linux
   catalog.cattle.io/permits-os: linux, windows
   catalog.cattle.io/kube-version: '>= 1.16.0-0 < 1.25.0-0'
-  catalog.cattle.io/rancher-version: '>= 2.6.0-0 < 2.8.0-0'
+  catalog.cattle.io/rancher-version: '>= 2.7.0-0 < 2.8.0-0'
 apiVersion: v1
 appVersion: "1.16.0"
 description: A base Plugin Operator Chart for adding plugins to Rancher
