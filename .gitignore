@@ -4,6 +4,7 @@
 /dist
 *.swp
 .idea
-/plugin-operator
+/ui-plugin-operator
+/home
 .vscode/
 .DS_Store
