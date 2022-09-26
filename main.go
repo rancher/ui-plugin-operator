@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -21,7 +22,6 @@ import (
 	"github.com/rancher/wrangler/pkg/ratelimit"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	yaml "gopkg.in/yaml.v3"
 )
 
 var (
@@ -59,7 +59,7 @@ func (a *PluginOperator) Run(cmd *cobra.Command, args []string) error {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", indexHandler)
-	r.HandleFunc("/index.yaml", indexHandler)
+	r.HandleFunc("/index.json", indexHandler)
 	r.HandleFunc("/{name}/{version}/{rest:.*}", pluginHandler)
 	http.Handle("/", r)
 
@@ -84,7 +84,7 @@ func main() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	index, err := yaml.Marshal(&plugin.Index)
+	index, err := json.Marshal(&plugin.Index)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		logrus.Error(err)
