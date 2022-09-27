@@ -19,13 +19,11 @@ type UIPluginSpec struct {
 }
 
 type UIPluginEntry struct {
-	Name    string `json:"name,omitempty"`
-	Version string `json:"version,omitempty"`
-	// Description string `json:"description,omitempty"`
-	// Icon        string            `json:"icon,omitempty"`
-	Endpoint string `json:"endpoint,omitempty"`
-	NoCache  bool   `json:"noCache,omitempty"`
-	// Annotations map[string]string `json:"annotations,omitempty"`
+	Name     string            `json:"name,omitempty"`
+	Version  string            `json:"version,omitempty"`
+	Endpoint string            `json:"endpoint,omitempty"`
+	NoCache  bool              `json:"noCache,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 }
 
 type UIPluginStatus struct {
