@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
-	"time"
 
 	v1 "github.com/rancher/ui-plugin-operator/pkg/apis/catalog.cattle.io/v1"
 	plugincontroller "github.com/rancher/ui-plugin-operator/pkg/generated/controllers/catalog.cattle.io/v1"
@@ -18,13 +17,8 @@ var (
 )
 
 type SafeIndex struct {
-	mu        sync.RWMutex
-	Generated time.Time
-	Entries   map[string]Entry
-}
-type Entry struct {
-	*v1.UIPluginEntry
-	Generated time.Time
+	mu      sync.RWMutex
+	Entries map[string]*v1.UIPluginEntry
 }
 
 // Generate generates a new index from a UIPluginCache object
@@ -34,16 +28,12 @@ func (s *SafeIndex) Generate(namespace string, cache plugincontroller.UIPluginCa
 	defer s.mu.Unlock()
 	cachedPlugins, err := cache.List(namespace, labels.Everything())
 	if err != nil {
-		logrus.Error(err.Error())
 		return err
 	}
-	s.Entries = make(map[string]Entry, len(cachedPlugins))
+	s.Entries = make(map[string]*v1.UIPluginEntry, len(cachedPlugins))
 	for _, plugin := range cachedPlugins {
-		entry := Entry{
-			UIPluginEntry: &plugin.Spec.Plugin,
-		}
-		entry.Generated = time.Now()
-		logrus.Debugf("adding plugin to index: %+v", *entry.UIPluginEntry)
+		entry := &plugin.Spec.Plugin
+		logrus.Debugf("adding plugin to index: %+v", *entry)
 		s.Entries[entry.Name] = entry
 	}
 
