@@ -18,7 +18,7 @@ var (
 
 type SafeIndex struct {
 	mu      sync.RWMutex
-	Entries map[string]*v1.UIPluginEntry
+	Entries map[string]*v1.UIPluginEntry `json:"entries,omitempty"`
 }
 
 // Generate generates a new index from a UIPluginCache object
