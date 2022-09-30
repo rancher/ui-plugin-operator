@@ -5,6 +5,7 @@ import (
 
 	v1 "github.com/rancher/ui-plugin-operator/pkg/apis/catalog.cattle.io/v1"
 	plugincontroller "github.com/rancher/ui-plugin-operator/pkg/generated/controllers/catalog.cattle.io/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -36,11 +37,20 @@ type handler struct {
 }
 
 func (h *handler) OnPluginChange(key string, plugin *v1.UIPlugin) (*v1.UIPlugin, error) {
-	err := Index.Generate(h.systemNamespace, h.pluginCache)
+	cachedPlugins, err := h.pluginCache.List(h.systemNamespace, labels.Everything())
 	if err != nil {
 		return plugin, err
 	}
-	Index.SyncWithFsCache()
+	err = Index.Generate(cachedPlugins)
+	if err != nil {
+		return plugin, err
+	}
+	pattern := FSCacheRootDir + "/*/*"
+	fsCacheFiles, err := fsCacheFilepathGlob(pattern)
+	if err != nil {
+		return plugin, err
+	}
+	FsCache.SyncWithIndex(&Index, fsCacheFiles)
 	if plugin == nil {
 		return plugin, nil
 	}
@@ -50,7 +60,7 @@ func (h *handler) OnPluginChange(key string, plugin *v1.UIPlugin) (*v1.UIPlugin,
 	} else {
 		plugin.Status.CacheState = Pending
 	}
-	err = FsCache.Sync(h.systemNamespace, h.pluginCache)
+	err = FsCache.SyncWithControllersCache(cachedPlugins)
 	if err != nil {
 		return plugin, err
 	}
