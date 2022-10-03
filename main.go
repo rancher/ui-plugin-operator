@@ -117,7 +117,7 @@ func proxyRequest(target, path string, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("failed to parse url [%s]", target), http.StatusInternalServerError)
 		return
 	}
-	if denylist(url) {
+	if denylist(url.Host) {
 		http.Error(w, fmt.Sprintf("url [%s] is forbidden", target), http.StatusForbidden)
 		return
 	}
@@ -130,7 +130,7 @@ func proxyRequest(target, path string, w http.ResponseWriter, r *http.Request) {
 	proxy.ServeHTTP(w, r)
 }
 
-func denylist(url *neturl.URL) bool {
+func denylist(host string) bool {
 	// temp: is there a way to check if an IP equivalent to localhost is being used?
 	denied := map[string]struct{}{
 		"localhost": {},
@@ -138,8 +138,8 @@ func denylist(url *neturl.URL) bool {
 		"0.0.0.0":   {},
 		"":          {},
 	}
-	host := strings.Split(url.Host, ":")[0]
-	_, isDenied := denied[host]
+	hostWithoutPort := strings.Split(host, ":")[0]
+	_, isDenied := denied[hostWithoutPort]
 
 	return isDenied
 }
