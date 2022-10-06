@@ -12,6 +12,7 @@ replace (
 )
 
 require (
+	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/gorilla/mux v1.8.0
 	github.com/rancher/lasso v0.0.0-20220628160937-749b3397db38
 	github.com/rancher/wrangler v1.0.0
