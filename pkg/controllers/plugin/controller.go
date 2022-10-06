@@ -9,10 +9,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-const (
-	FilesTxtFilename = "files.txt"
-)
-
 func Register(
 	ctx context.Context,
 	systemNamespace, managedBy string,

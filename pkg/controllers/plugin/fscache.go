@@ -1,6 +1,7 @@
 package plugin
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -9,12 +10,15 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/Masterminds/semver/v3"
 	v1 "github.com/rancher/ui-plugin-operator/pkg/apis/catalog.cattle.io/v1"
 	"github.com/sirupsen/logrus"
 )
 
 const (
-	FSCacheRootDir = "/home/uipluginoperator/cache"
+	FSCacheRootDir      = "/home/uipluginoperator/cache"
+	FilesTxtFilename    = "files.txt"
+	PackageJSONFilename = "package.json"
 
 	// Cache states used by custom resources
 	Cached   = "cached"
@@ -31,6 +35,10 @@ var (
 
 type FSCache struct{}
 
+type PackageJSON struct {
+	Version string `json:"version,omitempty"`
+}
+
 // SyncWithControllersCache takes in a slice of UI Plugins objects and syncs the filesystem cache with it
 func (c FSCache) SyncWithControllersCache(cachedPlugins []*v1.UIPlugin) error {
 	for _, p := range cachedPlugins {
@@ -45,12 +53,18 @@ func (c FSCache) SyncWithControllersCache(cachedPlugins []*v1.UIPlugin) error {
 			logrus.Debugf("skipped caching plugin [Name: %s Version: %s] is already cached", plugin.Name, plugin.Version)
 			continue
 		}
-		err := c.Save(plugin.Name, plugin.Version)
+		version, err := getVersionFromPackageJSON(fmt.Sprintf("%s/%s", plugin.Endpoint, PackageJSONFilename))
 		if err != nil {
 			return err
 		}
-		urlFilesTxt := fmt.Sprintf("%s/%s", plugin.Endpoint, FilesTxtFilename)
-		files, err := getPluginFiles(urlFilesTxt)
+		cachedVersion, err := semver.NewVersion(plugin.Version)
+		if err != nil {
+			return err
+		}
+		if !cachedVersion.Equal(version) {
+			return fmt.Errorf("plugin [%s] version [%s] does not match version in controller's cache [%s]", plugin.Name, version.String(), cachedVersion.String())
+		}
+		files, err := readFilesTxt(fmt.Sprintf("%s/%s", plugin.Endpoint, FilesTxtFilename))
 		if err != nil {
 			return err
 		}
@@ -58,9 +72,13 @@ func (c FSCache) SyncWithControllersCache(cachedPlugins []*v1.UIPlugin) error {
 			if file == "" {
 				continue
 			}
-			err = fetchFile(plugin.Endpoint, plugin.Name, plugin.Version, file)
+			data, err := readFile(plugin.Endpoint + "/" + file)
 			if err != nil {
 				return err
+			}
+			path := filepath.Join(FSCacheRootDir, plugin.Name, plugin.Version, file)
+			if err := c.Save(data, path); err != nil {
+				logrus.Debugf("failed to cache plugin [Name: %s Version: %s] in filesystem [path: %s]", plugin.Name, plugin.Version, path)
 			}
 		}
 	}
@@ -92,25 +110,30 @@ func (c FSCache) SyncWithIndex(index *SafeIndex, fsCacheFiles []string) error {
 	return nil
 }
 
+// Save takes in data and a path to save it in the filesystem cache
+func (c FSCache) Save(data []byte, path string) error {
+	logrus.Debugf("creating file [%s]", path)
+	if err := os.MkdirAll(filepath.Dir(path), os.ModePerm); err != nil {
+		return err
+	}
+	out, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	out.Write(data)
+
+	return nil
+}
+
+// Delete takes in a plugin's name and version, and deletes its entry in the filesystem cache
 func (c FSCache) Delete(name, version string) error {
-	// Delete plugin entry from filesystem cache
 	err := osRemoveAll(filepath.Join(FSCacheRootDir, name))
 	if err != nil {
 		err = fmt.Errorf("failed to delete entry [Name: %s Version: %s] from filesystem cache: %s", name, version, err.Error())
 		return err
 	}
 	logrus.Debugf("deleted plugin entry from cache [Name: %s Version: %s]", name, version)
-
-	return nil
-}
-
-// Save takes in the name and version of a plugin and creates an entry for it in the filesystem cache
-func (c FSCache) Save(name, version string) error {
-	err := os.MkdirAll(filepath.Join(FSCacheRootDir, name, version), os.ModePerm)
-	if err != nil {
-		logrus.Debugf("failed to cache plugin [Name: %s Version: %s] in filesystem", name, version)
-		return err
-	}
 
 	return nil
 }
@@ -146,45 +169,49 @@ func fsCacheFilepathGlob(pattern string) ([]string, error) {
 	return files, nil
 }
 
-// getPluginFiles takes in a URL for a plugin's files.txt, reads it, and returns a slice of the file paths contained in files.txt
-func getPluginFiles(urlFilesTxt string) ([]string, error) {
-	var files []string
-	logrus.Debugf("fetching file [%s]", urlFilesTxt)
-	resp, err := http.Get(urlFilesTxt)
+// getVersionFromPackageJSON takes in a URL for a plugin's package.json, reads it, and returns a Semver object of the version contained in the file
+func getVersionFromPackageJSON(packageJSONURL string) (*semver.Version, error) {
+	data, err := readFile(packageJSONURL)
 	if err != nil {
-		return files, err
+		return nil, err
 	}
-	defer resp.Body.Close()
-	b, err := io.ReadAll(resp.Body)
+	var packageJSON PackageJSON
+	err = json.Unmarshal(data, &packageJSON)
 	if err != nil {
-		return files, err
+		return nil, err
 	}
-	files = strings.Split(string(b), "\n")
+	version, err := semver.NewVersion(packageJSON.Version)
+	if err != nil {
+		return nil, err
+	}
+
+	return version, nil
+}
+
+// readFilesTxt takes in a URL for a plugin's files.txt, reads it, and returns a slice of the file paths contained in the file
+func readFilesTxt(filesTxtURL string) ([]string, error) {
+	data, err := readFile(filesTxtURL)
+	if err != nil {
+		return nil, err
+	}
+	files := strings.Split(string(data), "\n")
 
 	return files, nil
 }
 
-func fetchFile(endpoint, name, version, file string) error {
-	url := endpoint + "/" + file
-	logrus.Debugf("fetching file [%s]", url)
-	resp, err := http.Get(url)
+// readFile reads the file from the given URL and returns the data
+func readFile(URL string) ([]byte, error) {
+	logrus.Debugf("fetching file [%s]", URL)
+	resp, err := http.Get(URL)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
-	path := filepath.Join(FSCacheRootDir, name, version, file)
-	logrus.Debugf("creating file [%s]", url)
-	if err := os.MkdirAll(filepath.Dir(path), os.ModePerm); err != nil {
-		return err
-	}
-	out, err := os.Create(path)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer out.Close()
-	io.Copy(out, resp.Body)
-
-	return nil
+	return data, nil
 }
 
 func isDirectoryEmpty(path string) (bool, error) {
