@@ -58,7 +58,9 @@ func (a *PluginOperator) Run(cmd *cobra.Command, args []string) error {
 	}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/", indexHandler)
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/index.json", http.StatusPermanentRedirect)
+	})
 	r.HandleFunc("/index.json", indexHandler)
 	r.HandleFunc("/{name}/{version}/{rest:.*}", pluginHandler)
 	http.Handle("/", r)
