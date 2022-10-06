@@ -18,7 +18,7 @@ import (
 const (
 	FSCacheRootDir      = "/home/uipluginoperator/cache"
 	FilesTxtFilename    = "files.txt"
-	PackageJSONFilename = "package.json"
+	PackageJSONFilename = "plugin/package.json"
 
 	// Cache states used by custom resources
 	Cached   = "cached"
