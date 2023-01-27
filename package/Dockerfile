@@ -1,4 +1,4 @@
-FROM registry.suse.com/bci/bci-micro:15.3
+FROM registry.suse.com/bci/bci-micro:15.4
 RUN echo 'uipluginoperator:x:1000:1000::/home/uipluginoperator:/bin/bash' >> /etc/passwd && \
     echo 'uipluginoperator:x:1000:' >> /etc/group && \
     mkdir /home/uipluginoperator && \
