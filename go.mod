@@ -3,25 +3,25 @@ module github.com/rancher/ui-plugin-operator
 go 1.19
 
 replace (
-	k8s.io/api => k8s.io/api v0.24.2
-	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.24.2
-	k8s.io/apimachinery => k8s.io/apimachinery v0.24.2
-	k8s.io/cli-runtime => k8s.io/cli-runtime v0.24.2
-	k8s.io/client-go => github.com/rancher/client-go v1.24.0-rancher1
-	k8s.io/code-generator => k8s.io/code-generator v0.24.2
+	k8s.io/api => k8s.io/api v0.25.4
+	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.25.4
+	k8s.io/apimachinery => k8s.io/apimachinery v0.25.4
+	k8s.io/cli-runtime => k8s.io/cli-runtime v0.25.4
+	k8s.io/client-go => github.com/rancher/client-go v1.25.4-rancher1
+	k8s.io/code-generator => k8s.io/code-generator v0.25.4
 )
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/gorilla/mux v1.8.0
 	github.com/rancher/lasso v0.0.0-20220628160937-749b3397db38
-	github.com/rancher/wrangler v1.0.0
+	github.com/rancher/wrangler v1.1.0
 	github.com/rancher/wrangler-cli v0.0.0-20220624114648-479c5692ba22
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.7.0
-	k8s.io/apimachinery v0.24.2
-	k8s.io/client-go v0.24.2
+	k8s.io/apimachinery v0.25.4
+	k8s.io/client-go v0.25.4
 )
 
 require (
