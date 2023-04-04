@@ -9,11 +9,11 @@ annotations:
   catalog.cattle.io/kube-version: '>= 1.16.0-0 < 1.26.0-0'
   catalog.cattle.io/rancher-version: '>= 2.7.0-0 < 2.8.0-0'
 apiVersion: v1
-appVersion: '0.1.1-rc2'
+appVersion: '0.1.1'
 description: A UI Plugin Operator Chart for plugin management in Rancher
 name: ui-plugin-operator
 type: application
 keywords:
 - applications
 - infrastructure
-version: 0.2.0-rc3
+version: 0.2.0
