@@ -14,7 +14,7 @@ func Register(
 	systemNamespace, managedBy string,
 	plugin plugincontroller.UIPluginController,
 	pluginCache plugincontroller.UIPluginCache,
-	k8s kubernetes.Interface,
+	_ kubernetes.Interface,
 ) {
 	h := &handler{
 		systemNamespace: systemNamespace,
@@ -32,7 +32,7 @@ type handler struct {
 	pluginCache     plugincontroller.UIPluginCache
 }
 
-func (h *handler) OnPluginChange(key string, plugin *v1.UIPlugin) (*v1.UIPlugin, error) {
+func (h *handler) OnPluginChange(_ string, plugin *v1.UIPlugin) (*v1.UIPlugin, error) {
 	cachedPlugins, err := h.pluginCache.List(h.systemNamespace, labels.Everything())
 	if err != nil {
 		return plugin, err
