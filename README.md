@@ -1,17 +1,18 @@
 ui-plugin-operator
 ========
 
-## Getting Started
+> [!WARNING]
+> This repository will be deprecated with the release of Rancher 2.9.0. <br>
+> The code was moved to [here](https://github.com/rancher/rancher/tree/release/v2.9/pkg/controllers/dashboard/plugin)
 
-For more information, see the [Getting Started guide](docs/gettingstarted.md).
-
-## Developing
+## Developing 
 
 ### Which branch do I make changes on?
 
+:warning: Since this will be deprecated with Rancher 2.9.0, only bugfixes and security issues should be made.
+
 UI Plugin Operator is built and released off the contents of the `main` branch. To make a contribution, open up a PR to the `main` branch.
 
-For more information, see the [Developing guide](docs/developing.md).
 
 ## Building
 
