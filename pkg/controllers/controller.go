@@ -32,7 +32,7 @@ func (a *appContext) start(ctx context.Context) error {
 	return start.All(ctx, 50, a.starters...)
 }
 
-func Register(ctx context.Context, systemNamespace, controllerName, nodeName string, cfg clientcmd.ClientConfig) error {
+func Register(ctx context.Context, systemNamespace, controllerName, _ string, cfg clientcmd.ClientConfig) error {
 	if len(systemNamespace) == 0 {
 		return errors.New("cannot start controllers on system namespace: system namespace not provided")
 	}
@@ -74,7 +74,7 @@ func controllerFactory(rest *rest.Config) (controller.SharedControllerFactory, e
 	}), nil
 }
 
-func newContext(ctx context.Context, systemNamespace string, cfg clientcmd.ClientConfig) (*appContext, error) {
+func newContext(_ context.Context, systemNamespace string, cfg clientcmd.ClientConfig) (*appContext, error) {
 	client, err := cfg.ClientConfig()
 	if err != nil {
 		return nil, err

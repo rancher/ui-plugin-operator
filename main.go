@@ -35,7 +35,7 @@ type PluginOperator struct {
 	NodeName       string `usage:"Name of the node this controller is running on" env:"NODE_NAME"`
 }
 
-func (a *PluginOperator) Run(cmd *cobra.Command, args []string) error {
+func (a *PluginOperator) Run(cmd *cobra.Command, _ []string) error {
 	if len(a.Namespace) == 0 {
 		return fmt.Errorf("helm-locker can only be started in a single namespace")
 	}
@@ -85,7 +85,7 @@ func main() {
 	command.Main(cmd)
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+func indexHandler(w http.ResponseWriter, _ *http.Request) {
 	index, err := json.Marshal(&plugin.Index)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

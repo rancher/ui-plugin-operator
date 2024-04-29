@@ -99,11 +99,10 @@ func (c FSCache) SyncWithIndex(index *SafeIndex, fsCacheFiles []string) error {
 		_, ok := index.Entries[name]
 		if ok && index.Entries[name].Version == version {
 			continue
-		} else {
-			err := c.Delete(name, version)
-			if err != nil {
-				return err
-			}
+		}
+		err := c.Delete(name, version)
+		if err != nil {
+			return err
 		}
 	}
 
