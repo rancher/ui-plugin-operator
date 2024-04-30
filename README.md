@@ -1,5 +1,4 @@
-ui-plugin-operator
-========
+# ui-plugin-operator
 
 > [!WARNING]
 > This repository will be deprecated with the release of Rancher 2.9.0. <br>
@@ -14,16 +13,40 @@ ui-plugin-operator
 UI Plugin Operator is built and released off the contents of the `main` branch. To make a contribution, open up a PR to the `main` branch.
 
 
-## Building
+### Building
 
-`make`
+```
+go build -o bin/ui-plugin-operator
+```
 
+### Running
 
-## Running
+```
+./bin/ui-plugin-operator
+```
 
-`./bin/ui-plugin-operator`
+### Running Unit Tests
+
+```
+go test ./...
+```
+
+### Linting
+
+```
+golangci-lint run ./...
+```
+
+### Releasing
+
+Simply tag a commit with the version you want to release, and push
+that tag upstream. The automation will take care of the rest: binaries
+will be published in a github release, and docker images will be
+pushed to docker hub.
+
 
 ## License
+
 Copyright (c) 2020 [Rancher Labs, Inc.](http://rancher.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
