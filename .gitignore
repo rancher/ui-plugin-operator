@@ -1,10 +1,6 @@
-/.dapper
-/.cache
 /bin
 /dist
 *.swp
 .idea
-/ui-plugin-operator
-/home
 .vscode/
 .DS_Store

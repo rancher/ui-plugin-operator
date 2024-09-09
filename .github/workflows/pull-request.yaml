@@ -1,13 +1,63 @@
-name: CI-pullrequest
+name: Pull request checks
 
 on: [pull_request]
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.19'
+
+      - name: Run unit tests
+        run: go test ./...
+
+  # Linting currently fails. If in the future we fix linter issues,
+  # we can enable this step.
+  # lint:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - uses: actions/setup-go@v4
+  #       with:
+  #         go-version: '1.19'
+
+  #     - name: Run linter
+  #       uses: golangci/golangci-lint-action@v5
+  #       with:
+  #         version: v1.57
+
   build:
     runs-on: ubuntu-latest
-    container: 
-      image: rancher/dapper:v0.5.4
     steps:
-      - uses: actions/checkout@v1
-      - name: Run CI
-        run: dapper ci
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.19'
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Test build of binaries
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          distribution: goreleaser
+          version: latest
+          args: build --snapshot
+
+      - name: Test build of docker images
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64,linux/arm64
+          push: false
+          tags: ${{ github.repository }}:${{ github.run_number }}
+          file: package/Dockerfile
+          context: .
