@@ -145,10 +145,10 @@ func Test_isCached(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
-			osStat = func(name string) (fs.FileInfo, error) {
+			osStat = func(_ string) (fs.FileInfo, error) {
 				return nil, tc.OsStatErr
 			}
-			isDirEmpty = func(path string) (bool, error) {
+			isDirEmpty = func(_ string) (bool, error) {
 				return tc.IsDirEmptyVal, nil
 			}
 			fsCache := FSCache{}
