@@ -1,4 +1,4 @@
-FROM registry.suse.com/bci/bci-micro:15.4
+FROM registry.suse.com/bci/bci-micro:15.6
 ARG TARGETOS
 ARG TARGETARCH
 RUN echo 'uipluginoperator:x:1000:1000::/home/uipluginoperator:/bin/bash' >> /etc/passwd && \
