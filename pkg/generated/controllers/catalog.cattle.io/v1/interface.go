@@ -21,7 +21,8 @@ package v1
 import (
 	"github.com/rancher/lasso/pkg/controller"
 	v1 "github.com/rancher/ui-plugin-operator/pkg/apis/catalog.cattle.io/v1"
-	"github.com/rancher/wrangler/pkg/schemes"
+	"github.com/rancher/wrangler/v2/pkg/generic"
+	"github.com/rancher/wrangler/v2/pkg/schemes"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
@@ -43,6 +44,6 @@ type version struct {
 	controllerFactory controller.SharedControllerFactory
 }
 
-func (c *version) UIPlugin() UIPluginController {
-	return NewUIPluginController(schema.GroupVersionKind{Group: "catalog.cattle.io", Version: "v1", Kind: "UIPlugin"}, "uiplugins", true, c.controllerFactory)
+func (v *version) UIPlugin() UIPluginController {
+	return generic.NewController[*v1.UIPlugin, *v1.UIPluginList](schema.GroupVersionKind{Group: "catalog.cattle.io", Version: "v1", Kind: "UIPlugin"}, "uiplugins", true, v.controllerFactory)
 }

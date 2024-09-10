@@ -16,10 +16,10 @@ import (
 	"github.com/rancher/ui-plugin-operator/pkg/crd"
 	"github.com/rancher/ui-plugin-operator/pkg/version"
 	command "github.com/rancher/wrangler-cli"
-	_ "github.com/rancher/wrangler/pkg/generated/controllers/apiextensions.k8s.io"
-	_ "github.com/rancher/wrangler/pkg/generated/controllers/networking.k8s.io"
-	"github.com/rancher/wrangler/pkg/kubeconfig"
-	"github.com/rancher/wrangler/pkg/ratelimit"
+	_ "github.com/rancher/wrangler/v2/pkg/generated/controllers/apiextensions.k8s.io"
+	_ "github.com/rancher/wrangler/v2/pkg/generated/controllers/networking.k8s.io"
+	"github.com/rancher/wrangler/v2/pkg/kubeconfig"
+	"github.com/rancher/wrangler/v2/pkg/ratelimit"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -35,7 +35,7 @@ type PluginOperator struct {
 	NodeName       string `usage:"Name of the node this controller is running on" env:"NODE_NAME"`
 }
 
-func (a *PluginOperator) Run(cmd *cobra.Command, args []string) error {
+func (a *PluginOperator) Run(cmd *cobra.Command, _ []string) error {
 	if len(a.Namespace) == 0 {
 		return fmt.Errorf("helm-locker can only be started in a single namespace")
 	}
@@ -85,7 +85,7 @@ func main() {
 	command.Main(cmd)
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+func indexHandler(w http.ResponseWriter, _ *http.Request) {
 	index, err := json.Marshal(&plugin.Index)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

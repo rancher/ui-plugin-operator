@@ -11,10 +11,10 @@ import (
 	"github.com/rancher/ui-plugin-operator/pkg/controllers/plugin"
 	catalog "github.com/rancher/ui-plugin-operator/pkg/generated/controllers/catalog.cattle.io"
 	plugincontroller "github.com/rancher/ui-plugin-operator/pkg/generated/controllers/catalog.cattle.io/v1"
-	"github.com/rancher/wrangler/pkg/generic"
-	"github.com/rancher/wrangler/pkg/leader"
-	"github.com/rancher/wrangler/pkg/ratelimit"
-	"github.com/rancher/wrangler/pkg/start"
+	"github.com/rancher/wrangler/v2/pkg/generic"
+	"github.com/rancher/wrangler/v2/pkg/leader"
+	"github.com/rancher/wrangler/v2/pkg/ratelimit"
+	"github.com/rancher/wrangler/v2/pkg/start"
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -32,7 +32,7 @@ func (a *appContext) start(ctx context.Context) error {
 	return start.All(ctx, 50, a.starters...)
 }
 
-func Register(ctx context.Context, systemNamespace, controllerName, nodeName string, cfg clientcmd.ClientConfig) error {
+func Register(ctx context.Context, systemNamespace, controllerName, _ string, cfg clientcmd.ClientConfig) error {
 	if len(systemNamespace) == 0 {
 		return errors.New("cannot start controllers on system namespace: system namespace not provided")
 	}
@@ -74,7 +74,7 @@ func controllerFactory(rest *rest.Config) (controller.SharedControllerFactory, e
 	}), nil
 }
 
-func newContext(ctx context.Context, systemNamespace string, cfg clientcmd.ClientConfig) (*appContext, error) {
+func newContext(_ context.Context, systemNamespace string, cfg clientcmd.ClientConfig) (*appContext, error) {
 	client, err := cfg.ClientConfig()
 	if err != nil {
 		return nil, err

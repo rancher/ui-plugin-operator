@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 
 	v1 "github.com/rancher/ui-plugin-operator/pkg/apis/catalog.cattle.io/v1"
-	"github.com/rancher/wrangler/pkg/crd"
-	"github.com/rancher/wrangler/pkg/yaml"
+	"github.com/rancher/wrangler/v2/pkg/crd"
+	"github.com/rancher/wrangler/v2/pkg/yaml"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/rest"
